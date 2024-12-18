@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Godown Locator</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        label, input, button { display: block; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Godown Locator System</h1>
+    <form id="add-form">
+        <h3>Add Item</h3>
+        <label for="name">Item Name:</label>
+        <input type="text" id="name" required>
+        <label for="category">Category:</label>
+        <input type="text" id="category" required>
+        <label for="location">Location:</label>
+        <input type="text" id="location" required>
+        <button type="submit">Add Item</button>
+    </form>
+
+    <form id="search-form">
+        <h3>Search Item</h3>
+        <label for="search-category">Category:</label>
+        <input type="text" id="search-category" required>
+        <button type="submit">Search</button>
+    </form>
+
+    <div id="results"></div>
+
+    <script>
+        const addForm = document.getElementById('add-form');
+        const searchForm = document.getElementById('search-form');
+        const resultsDiv = document.getElementById('results');
+
+        addForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = {
+                name: document.getElementById('name').value,
+                category: document.getElementById('category').value,
+                location: document.getElementById('location').value
+            };
+            const response = await fetch('/api/items', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            const result = await response.json();
+            alert('Item added: ' + result.name);
+        });
+
+        searchForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const category = document.getElementById('search-category').value;
+            const response = await fetch(`/api/items?category=${category}`);
+            const results = await response.json();
+            resultsDiv.innerHTML = `<h3>Results:</h3><ul>${results.map(item => `<li>${item.name} (${item.location})</li>`).join('')}</ul>`;
+        });
+    </script>
+</body>
+</html>
